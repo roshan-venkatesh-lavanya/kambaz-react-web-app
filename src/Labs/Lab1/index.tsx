@@ -193,7 +193,7 @@ Your favorite books (in no particular order)
 </br>
 
 <label htmlFor="file-upload"><strong>File Upload</strong></label><br />
-<label htmlFor="file-upload">Upload a file:</label>
+<label htmlFor="file-upload">Upload a file :</label>
 <input type="file" id="file-upload" name="file-upload" />
 
 <h5 id="wd-radio-buttons">Radio buttons</h5>
