@@ -9,10 +9,7 @@ export default function Account() {
     <div className="container-fluid">
       <div className="row">
 
-        {/* Global Sidebar */}
-        <div className="col-2">
-          <Navigation />
-        </div>
+
 
         {/* Account Sidebar */}
         <div className="col-2">
