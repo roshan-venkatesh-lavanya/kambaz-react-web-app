@@ -2,7 +2,7 @@ import { Routes, Route, NavLink } from "react-router-dom";
 import Signin from "./Signin";
 import Signup from "./Signup";
 import Profile from "./Profile";
-import Navigation from "../Navigation"; // main sidebar
+
 
 export default function Account() {
   return (
