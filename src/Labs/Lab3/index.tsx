@@ -1,4 +1,3 @@
-import { RiHome4Fill } from "react-icons/ri";
 import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
 import ArrayIndexAndLength from "./ArrayIndexAndLength";
 import ArrowFunctions from "./ArrowFunctions";
@@ -24,7 +23,6 @@ import TodoList from "./todos/TodoList";
 import Spreading from "./Spreading";
 import Destructing from "./Destructing";
 import FunctionDestructing from "./FunctionDestructing";
-import Math from "./Math";
 import DestructingImports from "./DestructingImports";
 import Classes from "./Classes";
 import Styles from "./Styles";
