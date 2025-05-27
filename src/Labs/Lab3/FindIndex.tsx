@@ -8,6 +8,6 @@ const string3Index = stringArray1.findIndex(a => a === 'string3');
     <div id="wd-find-index">
       <h4>Find Index function</h4>
       fourIndex = {fourIndex} <br />
-      string3Index = {1} <hr />
+      string3Index = {string3Index} <hr />
     </div>
 );}
