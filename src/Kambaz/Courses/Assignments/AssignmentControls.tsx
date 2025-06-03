@@ -17,6 +17,8 @@ export default function AssignmentControl() {
         <Button variant="outline-secondary">+ Group</Button>
         <Button variant="danger">+ Assignment</Button>
       </Col>
+      
     </Row>
+    
   );
 }

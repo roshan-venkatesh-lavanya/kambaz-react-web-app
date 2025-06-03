@@ -1,41 +1,60 @@
-import { Link } from "react-router-dom";
-import { FaRegCircleUser } from "react-icons/fa6";
-import { AiOutlineDashboard } from "react-icons/ai";
-import { LiaBookSolid } from "react-icons/lia";
-import { IoCalendarOutline } from "react-icons/io5";
-import { FaInbox } from "react-icons/fa6";
-import { LiaCogSolid } from "react-icons/lia";
+import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-export default function Navigation() {
+export default function AccountNavigation() {
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isSignedIn = !!currentUser;
+
   return (
-    <div id="wd-navigation" className="bg-black text-white vh-100 p-2">
-      <img src="/images/NEU.png" alt="Northeastern Logo" width="75px" className="mb-4" />
-      <div className="d-flex flex-column gap-3">
-        <Link to="/Kambaz/Account" className="text-white text-decoration-none text-center">
-          <FaRegCircleUser className="fs-1" />
-          <div>Account</div>
-        </Link>
-        <Link to="/Kambaz/Dashboard" className="text-white text-decoration-none text-center">
-          <AiOutlineDashboard className="fs-1" />
-          <div>Dashboard</div>
-        </Link>
-        <Link to="/Kambaz/Courses" className="text-white text-decoration-none text-center">
-          <LiaBookSolid className="fs-1" />
-          <div>Courses</div>
-        </Link>
-        <Link to="/Kambaz/Calendar" className="text-white text-decoration-none text-center">
-          <IoCalendarOutline className="fs-1" />
-          <div>Calendar</div>
-        </Link>
-        <Link to="/Kambaz/Inbox" className="text-white text-decoration-none text-center">
-          <FaInbox className="fs-1" />
-          <div>Inbox</div>
-        </Link>
-        <Link to="/Labs" className="text-white text-decoration-none text-center">
-          <LiaCogSolid className="fs-1" />
-          <div>Labs</div>
-        </Link>
+    <div id="wd-account-navigation" className="wd list-group fs-5 rounded-0">
+      <div className="list-group-item fw-bold text-uppercase border border-0 bg-light">
+        Account
       </div>
+
+      {/* Only show Signin/Signup if NOT signed in */}
+      {!isSignedIn && (
+        <>
+          <NavLink
+            to="/Kambaz/Account/Signin"
+            id="wd-account-signin-link"
+            className={({ isActive }) =>
+              `list-group-item border border-0 ${isActive ? "active" : ""}`
+            }
+            style={({ isActive }) => ({
+              color: isActive ? "black" : "red",
+            })}
+          >
+            Signin
+          </NavLink>
+          <NavLink
+            to="/Kambaz/Account/Signup"
+            id="wd-account-signup-link"
+            className={({ isActive }) =>
+              `list-group-item border border-0 ${isActive ? "active" : ""}`
+            }
+            style={({ isActive }) => ({
+              color: isActive ? "black" : "red",
+            })}
+          >
+            Signup
+          </NavLink>
+        </>
+      )}
+
+      {isSignedIn && (
+        <NavLink
+          to="/Kambaz/Account/Profile"
+          id="wd-account-profile-link"
+          className={({ isActive }) =>
+            `list-group-item border border-0 ${isActive ? "active" : ""}`
+          }
+          style={({ isActive }) => ({
+            color: isActive ? "black" : "red",
+          })}
+        >
+          Profile
+        </NavLink>
+      )}
     </div>
   );
 }

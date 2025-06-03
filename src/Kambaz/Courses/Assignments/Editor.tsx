@@ -1,109 +1,181 @@
-import { Col, Form, Row, Button } from "react-bootstrap";
-import * as db from "../../Database";
-import { Link, useParams } from "react-router-dom";
-export default function AssignmentEditor() {
-  const {aid}=useParams()
-  const assignment = db.assignments.find((a)=>aid === a._id)
-  const {cid} = useParams()
-  if (!assignment) {
-  return <div className="p-3">Assignment not found.</div>; 
-}
-  return (
-    <div id="wd-assignments-editor" className="p-3">
-      <Form>
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="wd-name"></Form.Label>
-          <Form.Control id="wd-name" defaultValue={assignment.title}/>
-        </Form.Group>
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Form, Button, Row, Col } from "react-bootstrap";
+import { addAssignment, updateAssignment } from "./reducer";
 
-        <Form.Group className="mb-3">
-          <Form.Label htmlFor="wd-description">Description</Form.Label>
+export default function AssignmentEditor() {
+  const { cid, aid } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+  const isEditing = aid !== "new";
+  const existingAssignment = isEditing
+    ? assignments.find((a: any) => a._id === aid)
+    : null;
+
+  const [assignment, setAssignment] = useState({
+    title: "",
+    description: "",
+    points: 100,
+    dueDate: "",
+    availableFromDate: "",
+    availableUntilDate: "",
+    course: cid || "",
+  });
+
+  useEffect(() => {
+    if (isEditing && existingAssignment) {
+      setAssignment({
+        title: existingAssignment.title || "",
+        description: existingAssignment.description || "",
+        points: existingAssignment.points || 100,
+        dueDate: existingAssignment.dueDate || "",
+        availableFromDate: existingAssignment.availableFromDate || "",
+        availableUntilDate: existingAssignment.availableUntilDate || "",
+        course: existingAssignment.course || cid || "",
+      });
+    }
+  }, [isEditing, existingAssignment, cid]);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isEditing) {
+      dispatch(updateAssignment({ ...assignment, _id: aid }));
+    } else {
+      dispatch(addAssignment(assignment));
+    }
+    navigate(`/Kambaz/Courses/${cid}/Assignments`);
+  };
+
+  return (
+    <div id="wd-assignments-editor" className="container mt-5">
+      <Form onSubmit={handleSave}>
+        <Form.Group controlId="wd-name" className="mb-4">
+          <Form.Label>
+            <h3>Assignment Name</h3>
+          </Form.Label>
           <Form.Control
-            as="textarea"
-            id="wd-description"
-            className="w-50"
-            rows={3}
-            defaultValue={assignment.description}
+            value={assignment.title}
+            onChange={(e) =>
+              setAssignment({ ...assignment, title: e.target.value })
+            }
           />
         </Form.Group>
 
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Points</Form.Label>
-          <Col sm={4}>
-            <Form.Control defaultValue={assignment.points} />
+        <Form.Label>
+          <h4>Description</h4>
+        </Form.Label>
+
+        <div
+          className="form-control mb-4"
+          style={{ height: "auto", padding: "1rem", overflowY: "auto" }}
+        >
+          The assignment is {" "}
+          <a
+            href="https://docs.google.com/document/d/1R7IuxYxmtciUQ0SQC0msNl1g_Fa_Yp-u9cV3zPdCcsY/edit?tab=t.0"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "red", textDecoration: "none" }}
+          >
+            available online
+          </a>
+          .<br />
+          Submit a link to the landing page of your Web application running on
+          Netlify.
+          <br />
+          The landing page should include the following:
+          <ul className="mt-2 mb-2">
+            <li>Your full name and section</li>
+            <li>Links to each of the lab assignments</li>
+            <li>Link to the Kambaz application</li>
+            <li>Links to all relevant source code repositories</li>
+          </ul>
+          The Kambaz application should include a link to navigate back to the
+          landing page.
+        </div>
+
+        <Form.Group as={Row} className="mb-4" controlId="wd-points">
+          <Form.Label column lg={4} className="text-lg-end">
+            Points
+          </Form.Label>
+          <Col lg={8}>
+            <Form.Control
+              type="number"
+              value={assignment.points}
+              onChange={(e) =>
+                setAssignment({
+                  ...assignment,
+                  points: parseInt(e.target.value) || 0,
+                })
+              }
+            />
           </Col>
         </Form.Group>
 
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Assignment Group</Form.Label>
-          <Col sm={4}>
-            <Form.Select defaultValue={assignment.group}>
-              <option value="Assignments">Assignments</option>
-              <option value="Quizzes">Quizzes</option>
-              <option value="Exams">Exams</option>
-              <option value="Project">Project</option>
-            </Form.Select>
+        <Form.Group as={Row} className="mb-4" controlId="wd-due-date">
+          <Form.Label column lg={4} className="text-lg-end">
+            Due
+          </Form.Label>
+          <Col lg={8}>
+            <Form.Control
+              type="date"
+              value={assignment.dueDate}
+              onChange={(e) =>
+                setAssignment({ ...assignment, dueDate: e.target.value })
+              }
+            />
           </Col>
         </Form.Group>
 
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Display Grade</Form.Label>
-          <Col sm={4}>
-            <Form.Select id="wd-display-grade-as" defaultValue={assignment.displayGrade}>
-              <option value="Percentage">Percentage</option>
-              <option value="Points Earned">Points Earned</option>
-            </Form.Select>
+        <Form.Group as={Row} className="mb-4">
+          <Form.Label column lg={4} className="text-lg-end">
+            Available From
+          </Form.Label>
+          <Col lg={8}>
+            <Form.Control
+              type="date"
+              value={assignment.availableFromDate}
+              onChange={(e) =>
+                setAssignment({
+                  ...assignment,
+                  availableFromDate: e.target.value,
+                })
+              }
+            />
           </Col>
         </Form.Group>
 
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Submission Type</Form.Label>
-          <Col sm={10}>
-            <Form.Select id="wd-submission-type" defaultValue={assignment.submissionType}>
-              <option value="Online">Online</option>
-            </Form.Select>
-
-            <Form.Label className="mt-2">Online entry options</Form.Label>
-            <div>
-              <Form.Check type="checkbox" label="Text Entry" id="wd-text-entry"/>
-              <Form.Check type="checkbox" label="Website URL" id="wd-website-url" />
-              <Form.Check type="checkbox" label="Media Recordings" id="wd-media-recordings" />
-              <Form.Check type="checkbox" label="Student Annotation" id="wd-student-annotation" />
-              <Form.Check type="checkbox" label="File Uploads" id="wd-file-upload" />
-            </div>
+        <Form.Group as={Row} className="mb-4">
+          <Form.Label column lg={4} className="text-lg-end">
+            Available Until
+          </Form.Label>
+          <Col lg={8}>
+            <Form.Control
+              type="date"
+              value={assignment.availableUntilDate}
+              onChange={(e) =>
+                setAssignment({
+                  ...assignment,
+                  availableUntilDate: e.target.value,
+                })
+              }
+            />
           </Col>
         </Form.Group>
 
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Assign To</Form.Label>
-          <Col sm={4}>
-            <Form.Control type="text" id="wd-assign-to" defaultValue={assignment.assignTo} />
-          </Col>
-        </Form.Group>
+        <hr />
 
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Due Date</Form.Label>
-          <Col sm={4}>
-            <Form.Control type="date" id="wd-due-date" defaultValue={assignment.dueDate}/>
-          </Col>
-        </Form.Group>
-
-        <Form.Group as={Row} className="mb-3">
-          <Form.Label column sm={2}>Available From</Form.Label>
-          <Col sm={4}>
-            <Form.Control type="date" id="wd-available-from" defaultValue={assignment.availableFrom} />
-          </Col>
-          <Form.Label column sm={2}>Available Until</Form.Label>
-          <Col sm={4}>
-            <Form.Control type="date" id="wd-available-until" defaultValue={assignment.availableUntil}/>
-          </Col>
-        </Form.Group>
-
-        <div className="d-flex gap-2 float-end">
+        <div className="d-flex justify-content-end">
           <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
-          <Button type="submit" variant="danger">Save</Button>
-          <Button variant="secondary">Cancel</Button>
+            <Button variant="secondary" className="me-2" type="button">
+              Cancel
+            </Button>
           </Link>
+          <Button variant="danger" type="submit">
+            Save
+          </Button>
         </div>
       </Form>
     </div>

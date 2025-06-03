@@ -1,4 +1,3 @@
-import { RiHome4Fill } from "react-icons/ri";
 import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
 import ArrayIndexAndLength from "./ArrayIndexAndLength";
 import ArrowFunctions from "./ArrowFunctions";
@@ -19,12 +18,11 @@ import FindIndex from "./FindIndex";
 import FilterFunction from "./FilterFunction";
 import JsonStringify from "./JsonStringify";
 import House from "./House";
-import TodoItem from "./todos/TodoItem";
-import TodoList from "./todos/TodoList";
+import TodoItem from "./TodoItem";
+import TodoList from "./TodoList";
 import Spreading from "./Spreading";
 import Destructing from "./Destructing";
 import FunctionDestructing from "./FunctionDestructing";
-import Math from "./Math";
 import DestructingImports from "./DestructingImports";
 import Classes from "./Classes";
 import Styles from "./Styles";
@@ -33,13 +31,23 @@ import Square from "./Square";
 import Highlight from "./HighLight";
 import AddPathParameters from "./AddPathParameters";
 import PathParameters from "./PathParameters";
+import { ListGroup } from "react-bootstrap";
 
 
 
 export default function Lab3() {
+
+  // Example todos array
+  const todos = [
+    { id: 1, title: "Learn React" },
+    { id: 2, title: "Practice TypeScript" },
+    { id: 3, title: "Build a project" }
+  ];
+
   return (
     <div id="wd-lab3">
       <h3>Lab 3</h3>
+       
           <VariablesAndConstants/>
           <VariableTypes/>
           <BooleanVariables />
@@ -78,6 +86,12 @@ export default function Lab3() {
           </Highlight>
           <AddPathParameters />
           <PathParameters />
+             <ListGroup>
+        {todos.map((todo: any) => (
+          <ListGroup.Item key={todo.id}>{todo.title}</ListGroup.Item>
+        ))}
+      </ListGroup>
+      <hr />
     </div>
   );
 }

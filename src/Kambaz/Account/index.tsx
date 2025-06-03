@@ -1,62 +1,43 @@
-import { Routes, Route, NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Routes, Route, Navigate } from "react-router";
 import Signin from "./Signin";
 import Signup from "./Signup";
 import Profile from "./Profile";
-import Navigation from "../Navigation"; // main sidebar
+import AccountNavigation from "./Navigation";
 
 export default function Account() {
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+
   return (
-    <div className="container-fluid">
-      <div className="row">
-
-
-
-        {/* Account Sidebar */}
-        <div className="col-2">
-          <div className="list-group">
-            <NavLink
-              to="/Kambaz/Account/Signin"
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action fw-semibold ${
-                  isActive ? "text-black" : "text-danger"
-                }`
-              }
-            >
-              Sign In
-            </NavLink>
-            <NavLink
-              to="/Kambaz/Account/Signup"
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action fw-semibold ${
-                  isActive ? "text-black" : "text-danger"
-                }`
-              }
-            >
-              Sign Up
-            </NavLink>
-            <NavLink
-              to="/Kambaz/Account/Profile"
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action fw-semibold ${
-                  isActive ? "text-black" : "text-danger"
-                }`
-              }
-            >
-              Profile
-            </NavLink>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="col-8 d-flex justify-content-center align-items-center vh-100">
-          <Routes>
-            <Route path="Signin" element={<Signin />} />
-            <Route path="Signup" element={<Signup />} />
-            <Route path="Profile" element={<Profile />} />
-          </Routes>
-        </div>
-
-      </div>
+    <div id="wd-account-screen">
+      <table>
+        <tbody>
+          <tr>
+            <td valign="top">
+              <AccountNavigation />
+            </td>
+            <td valign="top">
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <Navigate
+                      to={
+                        currentUser
+                          ? "/Kambaz/Account/Profile"
+                          : "/Kambaz/Account/Signin"
+                      }
+                    />
+                  }
+                />
+                <Route path="/Signin" element={<Signin />} />
+                <Route path="/Signup" element={<Signup />} />
+                <Route path="/Profile" element={<Profile />} />
+              </Routes>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
