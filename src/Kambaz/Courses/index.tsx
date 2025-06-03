@@ -13,7 +13,7 @@ export default function Courses() {
   const { cid } = useParams();
   const { pathname } = useLocation();
   const { courses } = useSelector((state: any) => state.coursesReducer);
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  useSelector((state: any) => state.accountReducer);
   
   // Find the specific course by ID
   const course = courses.find((course: any) => course._id === cid);
