@@ -30,7 +30,6 @@ export default function Courses() {
 
   // Get current section from pathname
   const currentSection = pathname.split("/")[4] || "Home";
-  const isFaculty = currentUser?.role === "FACULTY";
 
   return (
     <div id="wd-courses">
