@@ -1,4 +1,14 @@
-[
+ [
+  {
+    "_id": "RS100",
+    "name": "Introduction to Space Exploration",
+    "number": "RS4500",
+    "startDate": "2023-01-10",
+    "endDate": "2023-05-15",
+    "department": "D123",
+    "credits": 3,
+    "description": "This course provides a comprehensive overview of the history, technology, and future of space exploration. Students will learn about key milestones in space travel, the development of spacecraft, and the scientific principles that govern space missions. The course includes discussions on current and future missions, the role of international space agencies, and the challenges of human spaceflight. Designed for students with an interest in aerospace engineering or planetary science, this course combines theoretical knowledge with practical insights into the field of space exploration."
+  },
   {
     "_id": "RS101",
     "name": "Rocket Propulsion",

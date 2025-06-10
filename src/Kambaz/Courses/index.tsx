@@ -1,65 +1,66 @@
-import { Routes, Route, Navigate, useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { FaAngleRight } from "react-icons/fa";
-import CoursesNavigation from "./Navigation";
+import type { RootState } from "../store";
+import CourseNavigation from "./Navigation";
+import Home from "./Home";
+import Modules from "./Modules";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
-import Modules from "./Modules";
-import Home from "./Home";
-import People from "./People/Table";
-
+import PeopleTable from "./People/Table";
+import { FaAlignJustify } from "react-icons/fa";
 
 export default function Courses() {
-  const { cid } = useParams();
-  const { pathname } = useLocation();
-  const { courses } = useSelector((state: any) => state.coursesReducer);
-  useSelector((state: any) => state.accountReducer);
-  
-  // Find the specific course by ID
-  const course = courses.find((course: any) => course._id === cid);
-  
-  // If course not found, show error message
+  const { cid } = useParams<{ cid: string }>();
+  const location = useLocation();
+
+  const course = useSelector((state: RootState) =>
+    state.coursesReducer.all.find((c) => c._id === cid)
+  );
+
   if (!course) {
-    return (
-      <div className="p-3">
-        <h1>Course not found</h1>
-        <p>The requested course could not be found.</p>
-      </div>
-    );
+    return <h2 className="p-3">Course not found</h2>;
   }
 
-  // Get current section from pathname
-  const currentSection = pathname.split("/")[4] || "Home";
+  const currentUser = useSelector((state: RootState) => state.accountReducer.currentUser as { role?: string } | null);
+  const isFaculty = currentUser?.role === "FACULTY";
 
   return (
     <div id="wd-courses">
-      {/* Course Header with Breadcrumb */}
       <h2 className="text-danger">
-        <FaAngleRight className="me-1" />
-        {course.name} &gt; {currentSection}
+        <FaAlignJustify className="me-4 fs-4 mb-1" />
+        {course.name} &gt; {location.pathname.split("/")[4] || "Home"}
       </h2>
       <hr />
-      
-      {/* Main Content Area */}
+
       <div className="d-flex">
-        {/* Navigation Sidebar */}
-        <div className="d-none d-md-block">
-          <CoursesNavigation />
+        <div className="d-none d-md-block bg-white border-end pe-4">
+          <CourseNavigation isFaculty={isFaculty}/>
         </div>
-        
-        {/* Course Content */}
-        <div className="flex-fill">
+        <div className="flex-fill ps-4">
           <Routes>
-            <Route path="/" element={<Navigate to="Home" />} />
-            <Route path="Home" element={<Home />} />
-            <Route path="Modules" element={<Modules />} />
-            <Route path="Piazza" element={<h2>Piazza</h2>} />
-            <Route path="Zoom" element={<h2>Zoom</h2>} />
-            <Route path="Assignments" element={<Assignments />} />
-            <Route path="Assignments/:aid" element={<AssignmentEditor />} />
-            <Route path="Quizzes" element={<h2>Quizzes</h2>} />
-            <Route path="Grades" element={<h2>Grades</h2>} />
-            <Route path="People" element={<People />} />
+            <Route index element={<Navigate to="Home" replace />} />
+
+            <Route
+              path="Home"
+              element={<Home />}
+            />
+            <Route
+              path="Modules"
+              element={<Modules />}
+            />
+            <Route
+              path="Assignments"
+              element={<Assignments isFaculty={isFaculty} />}
+            />
+            <Route
+              path="Assignments/:aid"
+              element={<AssignmentEditor />}
+            />
+            <Route path="People" element={<PeopleTable />} />
+            <Route path="Piazza" element={<h2 className="p-3">Piazza</h2>} />
+            <Route path="Zoom" element={<h2 className="p-3">Zoom Meetings</h2>} />
+            <Route path="Quizzes" element={<h2 className="p-3">Quizzes</h2>} />
+            <Route path="Grades" element={<h2 className="p-3">Grades</h2>} />
           </Routes>
         </div>
       </div>

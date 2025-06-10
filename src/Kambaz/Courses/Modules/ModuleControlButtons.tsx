@@ -1,15 +1,87 @@
-import { FaTrash } from "react-icons/fa";
-import { IoEllipsisVertical } from "react-icons/io5";
+
+import { Button } from "react-bootstrap";
+import { FaPencilAlt, FaTrash, FaPlus, FaEllipsisV } from "react-icons/fa";
 import GreenCheckmark from "./GreenCheckmark";
-import { BsPlus } from "react-icons/bs";
-import { FaPencil } from "react-icons/fa6";
-export default function ModuleControlButtons(
-{ moduleId, deleteModule , editModule}: { moduleId: string; deleteModule: (moduleId: string) => void, editModule: (moduleId: string) => void ;} ) {
+
+interface ModuleControlButtonsProps {
+  moduleId: string;
+  editModule: (moduleId: string) => void;
+  deleteModule: (moduleId: string) => void;
+  publishModule: (moduleId: string) => void;
+  addLesson: (moduleId: string) => void;
+  onMore: (moduleId: string) => void;
+}
+
+export default function ModuleControlButtons({
+  moduleId,
+  editModule,
+  deleteModule,
+  publishModule,
+  addLesson,
+  onMore,
+}: ModuleControlButtonsProps) {
   return (
-    <div className="float-end">
-      <FaPencil onClick={() => editModule(moduleId)} className="text-primary me-3" />
-      <FaTrash className="text-danger me-2 mb-1" onClick={() => deleteModule(moduleId)}/>
-      <GreenCheckmark />
-      <BsPlus className="fs-1" />
-      <IoEllipsisVertical className="fs-4" />
-    </div> );}
+    <div className="d-flex align-items-center">
+   
+      <Button
+        variant="link"
+        className="p-0 text-primary me-3"
+        onClick={(e) => {
+          e.preventDefault();
+          editModule(moduleId);
+        }}
+        id="wd-edit-module-click"
+      >
+        <FaPencilAlt size={18} />
+      </Button>
+
+      <Button
+        variant="link"
+        className="p-0 text-danger me-3"
+        onClick={(e) => {
+          e.preventDefault();
+          deleteModule(moduleId);
+        }}
+        id="wd-delete-module-click"
+      >
+        <FaTrash size={18} />
+      </Button>
+
+      <Button
+        variant="link"
+        className="p-0 text-success me-3"
+        onClick={(e) => {
+          e.preventDefault();
+          publishModule(moduleId);
+        }}
+        id="wd-publish-module-click"
+      >
+        <GreenCheckmark />
+      </Button>
+
+      <Button
+        variant="link"
+        className="p-0 text-dark me-3"
+        onClick={(e) => {
+          e.preventDefault();
+          addLesson(moduleId);
+        }}
+        id="wd-add-lesson-click"
+      >
+        <FaPlus size={18} />
+      </Button>
+
+      <Button
+        variant="link"
+        className="p-0 text-secondary"
+        onClick={(e) => {
+          e.preventDefault();
+          onMore(moduleId);
+        }}
+        id="wd-more-module-click"
+      >
+        <FaEllipsisV size={18} />
+      </Button>
+    </div>
+  );
+}

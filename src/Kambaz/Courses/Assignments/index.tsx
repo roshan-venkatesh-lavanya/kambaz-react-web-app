@@ -1,123 +1,263 @@
-import { ListGroup, Modal, Button } from "react-bootstrap";
+
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../../store";
+
+import {
+  fetchAssignments,
+  createAssignment,
+  updateAssignmentById,
+  deleteAssignmentById,
+  setEditing,
+  type Assignment,
+} from "./reducer";
+
+import {
+  InputGroup,
+  FormControl,
+  Button,
+  ListGroup,
+  Modal,
+  Form,
+} from "react-bootstrap";
+import { FaSearch, FaPlus, FaRegFileAlt } from "react-icons/fa";
+import { BsGripVertical, BsTrash, BsGear } from "react-icons/bs";
 import { IoEllipsisVertical } from "react-icons/io5";
-import AssignmentControl from "./AssignmentControls";
-import { FaAngleDown, FaPlus, FaTrash } from "react-icons/fa";
-import { BsGripVertical } from "react-icons/bs";
-import { MdAssignment } from "react-icons/md";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
-import { deleteAssignment } from "./reducer";
+import GreenCheckmark from "../Modules/GreenCheckmark";
 
-export default function Assignments() {
-  const { cid } = useParams();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
-  const { currentUser } = useSelector((state: any) => state.accountReducer);
+export default function Assignments({ isFaculty }: { isFaculty: boolean }) {
+  const { cid } = useParams<{ cid: string }>();
+  const dispatch = useDispatch<AppDispatch>();
+  const assignments = useSelector(
+    (s: RootState) => s.assignmentsReducer.assignments
+  );
+  const status = useSelector((s: RootState) => s.assignmentsReducer.status);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newPoints, setNewPoints] = useState(0);
+  const [newFrom, setNewFrom] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
+  const [newUntil, setNewUntil] = useState("");
+  useEffect(() => {
+    if (cid) dispatch(fetchAssignments(cid));
+  }, [cid, dispatch]);
 
-  const isFaculty = currentUser?.role === "FACULTY";
-  const courseAssignments = assignments.filter((a: any) => a.course === cid);
+  if (status === "loading") {
+    return <div>Loading assignments…</div>;
+  }
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
-
-  const handleDeleteClick = (id: string) => {
-    setAssignmentToDelete(id);
-    setShowDeleteDialog(true);
-  };
-
-  const confirmDelete = () => {
-    if (assignmentToDelete) {
-      dispatch(deleteAssignment(assignmentToDelete));
+  const handleDelete = (aid: string) => {
+    if (window.confirm("Delete this assignment?")) {
+      dispatch(deleteAssignmentById(aid));
     }
-    setShowDeleteDialog(false);
-    setAssignmentToDelete(null);
   };
 
-  const cancelDelete = () => {
-    setShowDeleteDialog(false);
-    setAssignmentToDelete(null);
+  const handleEditClick = (aid: string) => {
+    dispatch(setEditing({ id: aid, editing: true }));
+  };
+
+  const handleSaveInline = (a: Assignment) => {
+    dispatch(updateAssignmentById({ ...a, editing: false }));
+  };
+
+  const handleAddAssignment = () => {
+    if (!newTitle.trim()) return;
+    const payload = {
+      title: newTitle.trim(),
+      descriptionHtml: `<p>${newDesc}</p>`,
+      points: newPoints,
+      availableFrom: newFrom,
+      dueDate: newDueDate,
+      availableUntil: newUntil,
+    };
+    dispatch(createAssignment({ cid: cid!, assn: payload }));
+    setShowAdd(false);
+    setNewTitle("");
+    setNewDesc("");
+    setNewPoints(0);
+    setNewFrom("");
+    setNewDueDate("");
+    setNewUntil("");
   };
 
   return (
-    <div id="wd-assignments" className="p-3">
-      <AssignmentControl />
-      <br />
+    <div className="p-3">
+      <div className="d-flex align-items-center mb-4">
+        <InputGroup style={{ maxWidth: 300 }} className="me-auto">
+          <InputGroup.Text>
+            <FaSearch />
+          </InputGroup.Text>
+          <FormControl placeholder="Search…" />
+        </InputGroup>
+        {isFaculty && (
 
-      <ListGroup.Item className="wd-module p-0 mb-5 fs-5 border-gray">
-        <div className="wd-title p-3 ps-2 bg-secondary d-flex justify-content-between align-items-center">
-          <span>
-            <BsGripVertical className="fs-4" />
-            <FaAngleDown className="me-2" />ASSIGNMENTS 40% of Total
-          </span>
-          <div className="d-flex align-items-center gap-2">
-            <span className="fs-6 border border-light px-2 py-1 rounded">
-              40% of total
-            </span>
-            {isFaculty && (
-              <FaPlus
-                className="fs-5 cursor-pointer"
-                role="button"
-                onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments/new`)}
-              />
-            )}
-            <IoEllipsisVertical className="fs-4" />
+
+           <><Button
+            id="wd-add-group-click"
+            variant="light"
+            size="lg"
+            className="me-2 border border-secondary text-dark"
+          >
+            <FaPlus className="me-1" /> Group
+          </Button><Button
+            id="wd-add-assignment-click"
+            variant="danger"
+            size="lg"
+            onClick={() => setShowAdd(true)}
+          >
+              <FaPlus className="me-1" /> Assignment
+            </Button></>
+        )}
+      </div>
+
+      <ListGroup className="rounded-0 mb-3">
+        <ListGroup.Item className="p-0 border">
+          <div className="d-flex justify-content-between align-items-center p-3 bg-light border">
+            <strong>ASSIGNMENTS</strong>
           </div>
-        </div>
+        </ListGroup.Item>
+      </ListGroup>
 
-        <ListGroup className="wd-lessons rounded-0">
-          {courseAssignments.length === 0 ? (
-            <ListGroup.Item className="p-3 text-muted">
-              No assignments found for this course.
-            </ListGroup.Item>
-          ) : (
-            courseAssignments.map((a: any) => (
-              <ListGroup.Item key={a._id} className="wd-lesson p-3 ps-1">
-                <div className="d-flex justify-content-between align-items-start">
-                  <div className="d-flex align-items-start me-3">
-                    <BsGripVertical className="me-2 fs-4" />
-                    <MdAssignment className="me-2 fs-4 text-success" />
-                  </div>
-                  <div className="flex-grow-1">
+      <ListGroup className="rounded-0">
+        {assignments.map((a) => (
+          <ListGroup.Item
+            key={a._id}
+            className="d-flex justify-content-between align-items-start mb-2 p-3 border"
+            style={{ borderLeft: "5px solid #198754" }}
+          >
+            <div className="flex-grow-1">
+              {a.editing && isFaculty ? (
+                <FormControl
+                  value={a.title}
+                  onChange={(e) =>
+                    dispatch(updateAssignmentById({ ...a, title: e.target.value }))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSaveInline(a);
+                    }
+                  }}
+                  className="me-3"
+                />
+              ) : (
+                <>
+                  <div className="d-flex align-items-center mb-1">
+                    <BsGripVertical className="me-2" />
+                    <FaRegFileAlt className="me-2 text-success" />
                     <Link
                       to={`/Kambaz/Courses/${cid}/Assignments/${a._id}`}
-                      className="wd-assignment-link text-decoration-none"
+                      className="text-decoration-none text-dark"
                     >
-                      {a.title}
+                      <strong style={{ fontSize: "1.1rem" }}>{a.title}</strong>
                     </Link>
-                    <br />
-                    <small>
-                      <span className="text-danger">Multiple Modules</span> | <b>Not available until</b> {a.availableFromDate} at 12:00 am | Due {a.dueDate} at 11:59 pm | {a.points} pts
-                    </small>
                   </div>
-                  <div>
-                    {isFaculty && (
-                      <Button variant="danger" size="sm" onClick={() => handleDeleteClick(a._id)}>
-                        <FaTrash />
-                      </Button>
-                    )}
+                  <div
+                    className="text-secondary mb-1"
+                    style={{ fontSize: "0.9rem" }}
+                  >
+                    <strong>Not available until</strong> {a.availableFrom || "TBD"}
                   </div>
-                </div>
-              </ListGroup.Item>
-            ))
-          )}
-        </ListGroup>
-      </ListGroup.Item>
+                  <div
+                    className="text-secondary"
+                    style={{ fontSize: "0.9rem" }}
+                  >
+                    <strong>Due</strong> {a.dueDate || "TBD"} | {a.points} pts
+                  </div>
+                </>
+              )}
+            </div>
 
-      <Modal show={showDeleteDialog} onHide={cancelDelete} centered>
+            <div className="d-flex align-items-center">
+              {isFaculty && !a.editing && (
+                <>
+                  <BsGear
+                    onClick={() => handleEditClick(a._id)}
+                    className="text-primary me-3 fs-5"
+                  />
+                  <BsTrash
+                    onClick={() => handleDelete(a._id)}
+                    className="text-danger fs-5 me-3"
+                  />
+                </>
+              )}
+              {a.editing && <GreenCheckmark className="me-3" />}
+              <IoEllipsisVertical className="fs-4 text-secondary" />
+            </div>
+          </ListGroup.Item>
+        ))}
+      </ListGroup>
+
+      {/* Add Assignment Modal */}
+      <Modal show={showAdd} onHide={() => setShowAdd(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
+          <Modal.Title>New Assignment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete this assignment?
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Title</Form.Label>
+              <FormControl
+                placeholder="Assignment title"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <FormControl
+                as="textarea"
+                rows={3}
+                placeholder="Describe assignment…"
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Points</Form.Label>
+              <FormControl
+                type="number"
+                value={newPoints}
+                onChange={(e) => setNewPoints(+e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Available From</Form.Label>
+              <FormControl
+                type="datetime-local"
+                value={newFrom}
+                onChange={(e) => setNewFrom(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Due Date</Form.Label>
+              <FormControl
+                type="datetime-local"
+                value={newDueDate}
+                onChange={(e) => setNewDueDate(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Available Until</Form.Label>
+              <FormControl
+                type="datetime-local"
+                value={newUntil}
+                onChange={(e) => setNewUntil(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={cancelDelete}>
+          <Button variant="secondary" onClick={() => setShowAdd(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={confirmDelete}>
-            Delete
+          <Button
+            id="wd-save-assignment-click"
+            variant="primary"
+            onClick={handleAddAssignment}
+          >
+            Save
           </Button>
         </Modal.Footer>
       </Modal>
