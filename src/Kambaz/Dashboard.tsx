@@ -25,7 +25,7 @@ export default function Dashboard({
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
-  const defaultImageUrl = "/public/images/reactjs.jpg";
+  const defaultImageUrl = "https://www.patterns.dev/react/";
 
   return (
     <div id="wd-dashboard" className="p-4">
