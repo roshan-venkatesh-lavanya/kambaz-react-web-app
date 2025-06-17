@@ -1,13 +1,77 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 export default function AccountNavigation() {
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const isSignedIn = !!currentUser;
+  const isAdmin = currentUser?.role === "ADMIN";
+
   return (
-    <div id="wd-kambaz-navigation">
-      <a href="https://www.northeastern.edu/" id="wd-neu-link" target="_blank">Northeastern</a><br/>
-      <Link to="/Kambaz/Account" id="wd-account-link">Account</Link><br/>
-      <Link to="/Kambaz/Dashboard" id="wd-dashboard-link">Dashboard</Link><br/>
-      <Link to="/Kambaz/Dashboard" id="wd-course-link">Courses</Link><br/>
-      <Link to="/Kambaz/Calendar" id="wd-calendar-link">Calendar</Link><br/>
-      <Link to="/Kambaz/Inbox" id="wd-inbox-link">Inbox</Link><br/>
-      <Link to="/Labs" id="wd-labs-link">Labs</Link><br/>
+    <div id="wd-account-navigation" className="wd list-group fs-5 rounded-0">
+      <div className="list-group-item fw-bold text-uppercase border border-0 bg-light">
+        Account
+      </div>
+
+      {!isSignedIn && (
+        <>
+          <NavLink
+            to="/Kambaz/Account/Signin"
+            id="wd-account-signin-link"
+            className={({ isActive }) =>
+              `list-group-item border border-0 ${isActive ? "active" : ""}`
+            }
+            style={({ isActive }) => ({
+              color: isActive ? "black" : "red",
+            })}
+          >
+            Signin
+          </NavLink>
+          <NavLink
+            to="/Kambaz/Account/Signup"
+            id="wd-account-signup-link"
+            className={({ isActive }) =>
+              `list-group-item border border-0 ${isActive ? "active" : ""}`
+            }
+            style={({ isActive }) => ({
+              color: isActive ? "black" : "red",
+            })}
+          >
+            Signup
+          </NavLink>
+        </>
+      )}
+
+      {isSignedIn && (
+        <>
+          <NavLink
+            to="/Kambaz/Account/Profile"
+            id="wd-account-profile-link"
+            className={({ isActive }) =>
+              `list-group-item border border-0 ${isActive ? "active" : ""}`
+            }
+            style={({ isActive }) => ({
+              color: isActive ? "black" : "red",
+            })}
+          >
+            Profile
+          </NavLink>
+
+          {isAdmin && (
+            <NavLink
+              to="/Kambaz/Account/Users"
+              id="wd-account-users-link"
+              className={({ isActive }) =>
+                `list-group-item border border-0 ${isActive ? "active" : ""}`
+              }
+              style={({ isActive }) => ({
+                color: isActive ? "black" : "red",
+              })}
+            >
+              Users
+            </NavLink>
+          )}
+        </>
+      )}
     </div>
-);}
+  );
+}
