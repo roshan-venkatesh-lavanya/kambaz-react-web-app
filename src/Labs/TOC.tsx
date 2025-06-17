@@ -75,7 +75,7 @@ export default function TOC() {
       <Nav.Item>
         {" "}
         <Nav.Link
-          href="https://github.com/Saran-Jagadeesan-Uma"
+          href="https://github.com/roshan-venkatesh-lavanya"
           target="_blank"
         >
           {" "}
