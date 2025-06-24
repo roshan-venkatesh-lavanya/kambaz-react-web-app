@@ -25,7 +25,7 @@ export default function Dashboard({
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const isFaculty = currentUser?.role === "FACULTY";
-  const defaultImageUrl = "https://www.patterns.dev/react/";
+  const defaultImageUrl = "/images/reactjs.jpg";
 
   return (
     <div id="wd-dashboard" className="p-4">
@@ -91,7 +91,7 @@ export default function Dashboard({
 
       <div id="wd-dashboard-courses">
         <Row xs={1} md={5} className="g-4">
-          {courses.map((c) => {
+          {courses.filter((c)=>c!==null).map((c) => {
             const imageUrl = c.image || defaultImageUrl;
             const isEnrolled = Boolean(c.enrolled);
 
